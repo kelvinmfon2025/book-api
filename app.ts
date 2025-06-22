@@ -82,6 +82,6 @@ app.delete('/api/books/:id', (req: Request, res: Response) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(` 😃 Books API running at http://localhost:${PORT}`);
+  console.log(` Books API running at http://localhost:${PORT}`);
 });
  
