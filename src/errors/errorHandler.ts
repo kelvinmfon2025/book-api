@@ -1,7 +1,7 @@
 import { handleCastErrorDB, handleDuplicateFieldDB, handleSyntaxError, handleValidationErrorDB } from "./customErrors";
 import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
 import { sendDevError, sendProdError } from "./EnvErrors";
-import { NODE_ENV } from "../serviceUrl";
+import { NODE_ENV } from "../../serviceUrl";
 
 const GlobalErrorHandler:ErrorRequestHandler = (err:any, req:Request, res:Response, next:NextFunction)=>{
     err.status = err.status || "error";
