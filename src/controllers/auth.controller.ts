@@ -73,6 +73,55 @@ export const registerHandler = catchAsync(
   }
 );
 
+//For Kelvin
+
+// This is what you need to do to write the login handler function
+// Login Handler
+// This function will handle user login, validate credentials, and return access and refresh tokens.  
+
+export const loginHandler = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+     
+    }
+);
+
+//For Betty
+
+// chanegePasswordHandler
+// This function will handle changing the user's password, validating the old password, and updating to a new password.
+export const changePasswordHandler = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+
+})
+
+
+//For Kazeem
+
+// resetpasswordHandler
+// This function will handle resetting the user's password using a reset token, validating the token, and updating the password.
+export const resetPasswordHandler = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => { 
+
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // // Resend Verification Email
 // export const resendVerificationEmail = catchAsync(
 //     async (req: Request, res: Response, next: NextFunction) => {
@@ -191,93 +240,6 @@ export const registerHandler = catchAsync(
 //     }
 // );
 
-// // export const loginHandler = catchAsync(
-// //     async (req: Request, res: Response, next: NextFunction) => {
-// //         const isMobile = req.headers.mobilereqsender;
-
-// //         const { phone_email_or_username, password } = req.body;
-// //         // const user = await User.findOne({ email });
-// //         const user: any = await User.findOne({
-// //             $or: [{ email: phone_email_or_username }, { phone_number: phone_email_or_username }, { username: phone_email_or_username }], 
-// //         })
-// //             .select("+password")
-// //             .populate("store");
-
-// //         if (!user) return next(new AppError("User not found", 404));
-
-// //         const isMatch = await bcrypt.compare(password, user.password);
-// //         if (!isMatch) return next(new AppError("Invalid credentials", 401));
-// //         if (!user.isEmailVerified)
-// //             return next(new AppError("Please verify your email before log in.", 401));
-// //         // if (user.is_two_factor_enabled) {
-// //         //     //We should send a token here to track that okay, this person has had their password stuff done
-// //         //     const two_fa_track = {
-// //         //         id: user._id,
-// //         //         createdAt: Date.now(),
-// //         //     };
-// //         //     const two_fa_token = GenerateTrackingToken(two_fa_track);
-// //         //     return AppResponse(
-// //         //         res,
-// //         //         "Please check your Authenticator app for your token.",
-// //         //         200,
-// //         //         two_fa_token
-// //         //     );
-// //         // }
-// //         const account = {
-// //             id: user._id,
-// //             name: user.name,
-// //             username: user.username,
-// //             email: user.email,
-// //             // phone_number: user.phone_number,
-// //             role: user.role,
-// //             // profile_image:user.imageUrl,
-// //         };
-
-// //         // remove password from the user object
-// //         user.password = undefined;
-
-// //         await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
-// //         const accessToken: string | undefined = GenerateAccessToken(account);
-// //         const refreshToken: string | undefined = GenerateRefreshToken(account);
-// //         //If it is mobile we send token in response
-
-// //         if (isMobile)
-// //             return AppResponse(res, "Login successful", 200, {
-// //                 accessToken: accessToken,
-// //                 refreshToken: refreshToken,
-// //                 account: user,
-// //             });
-
-// //         res.cookie("e_access_token", accessToken, {
-// //             httpOnly: true,
-// //             secure: process.env.NODE_ENV === "production",
-// //             sameSite: "none",
-// //             partitioned: true,
-// //             priority: "high",
-// //             signed: true,
-// //             maxAge: 60 * 24 * 60 * 60 * 1000,
-// //             expires: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
-// //         });
-
-// //         res.cookie("e_refresh_token", refreshToken, {
-// //             httpOnly: true,
-// //             secure: process.env.NODE_ENV === "production",
-// //             sameSite: "none",
-// //             partitioned: true,
-// //             signed: true,
-// //             priority: "high",
-// //             maxAge: 60 * 24 * 60 * 60 * 1000,
-// //             expires: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
-// //         });
-
-
-// //         return AppResponse(res, "Login successful", 200, {
-// //             accessToken: accessToken,
-// //             refreshToken: refreshToken,
-// //             account: user,
-// //         });
-// //     }
-// // );
 
 // export const forgotPasswordHandler = catchAsync(
 //     async (req: Request, res: Response, next: NextFunction) => {
