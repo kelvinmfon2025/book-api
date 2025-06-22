@@ -96,13 +96,3 @@ process.on("unhandledRejection", (err: Error) => {
   });
 });
 
-// Optional: Handle SIGTERM for graceful shutdown
-process.on("SIGTERM", () => {
-  server.then((httpServer) => {
-    logger.info("SIGTERM received. Shutting down gracefully...");
-    httpServer.close(() => {
-      logger.info("Server closed");
-      process.exit(0);
-    });
-  });
-});
