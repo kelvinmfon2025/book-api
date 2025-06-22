@@ -1,70 +1,100 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import mongoSanitize from "express-mongo-sanitize";
+import helmet from "helmet";
+import compression from "compression";
+import http from "http";
+import path from "path";
+import multer from 'multer';
+
+import ConnectDB from "./src/config/db.config";
+import AppError from "./src/errors/AppError";
+import GlobalErrorHandler from "./src/errors/errorHandler";
+import authRoutes from "./src/routes/auth.route";
+// import userRoutes from "./src/routes/user.routes";
+
+import Limiter from "./src/middleware/rateLimit";
+import logger, { logRequest } from "./src/middleware/logger";
+import { COOKIE_SECRET, PORT } from "./src/serviceUrl";
+
+dotenv.config();
+const port = PORT || 8081;
 
 const app = express();
-const PORT = 3000;
-
+process.on("uncaughtException", (err: Error) => {
+  logger.error("Unhandled Exception, shutting down...");
+  logger.error(`${err.name}: ${err.message}`);
+  process.exit(1);
+});
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.set("trust proxy", 1);
+app.use(multer().any());
 
-interface Book {
-  id: number;
-  title: string;
-  author: string;
-}
 
-let books: Book[] = [];
-let nextId = 1;
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+  })
+);
 
-// GET /api/books - Get all books
-app.get('/api/books', (_req: Request, res: Response) => {
-  res.json(books);
+app.use(cookieParser(COOKIE_SECRET));
+app.use(helmet({
+  contentSecurityPolicy: false,
+}));
+
+//set view engine
+app.set("views", path.join(__dirname, "src/views"));
+app.set("view engine", "ejs");
+
+//This code is converting our req.body to a string which is actually false.
+// app.use(sanitizeInputs);
+app.use(mongoSanitize());
+app.use(logRequest);
+const shouldCompress = (req: express.Request, res: express.Response) => {
+  if (req.headers["x-no-compression"]) {
+    // Don't compress responses if this request header is present
+    return false;
+  }
+  return compression.filter(req, res);
+};
+
+app.use(compression({ filter: shouldCompress }));
+
+//All Routes comes in Here
+app.use("/v1/api/auth", authRoutes);
+// app.use("/v1/api/user", userRoutes);
+
+
+app.get("/", (req: Request, res: Response, next: NextFunction) => {
+  res.send("Hi");
 });
 
-// GET /api/books/:id - Get a book by ID
-app.get('/api/books/:id', (req: Request, res: Response ) => {
-  const id = parseInt(req.params.id);
-  const book = books.find(b => b.id === id);
-  if (!book) {
-    return res.status(404).json({ error: 'Book not found' });
-  }
-  res.json(book);
+app.use("*", (req: Request, res: Response, next: NextFunction) => {
+  const errorMessage = `Can not find ${req.originalUrl} with ${req.method} on this server`;
+  logger.warn(errorMessage);
+  next(new AppError(errorMessage, 501));
 });
 
-// POST /api/books - Create a new book
-app.post('/api/books', (req: Request, res: Response) => {
-  const { title, author } = req.body;
+app.use(GlobalErrorHandler);
+const server = ConnectDB().then(() => {
+  const httpServer = http.createServer(app);
+  httpServer.listen(port, () => {
+    logger.info(`Server running on port ${port}`);
+  });
 
-  if (!title || !author) {
-    return res.status(400).json({ error: 'Title and author are required' });
-  }
-
-  const newBook: Book = {
-    id: nextId++,
-    title,
-    author
-  };
-
-  books.push(newBook);
-  res.status(201).json(newBook);
+  return httpServer;
 });
 
-// PUT /api/books/:id - Update a book
-app.put('/api/books/:id', (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
-  const book = books.find(b => b.id === id);
-
-  if (!book) {
-    return res.status(404).json({ error: 'Book not found' });
-  }
-
-  const { title, author } = req.body;
-  if (!title || !author) {
-    return res.status(400).json({ error: 'Title and author are required' });
-  }
-
-  book.title = title;
-  book.author = author;
-
-  res.json(book);
+process.on("unhandledRejection", (err: Error) => {
+  logger.error("Unhandled Rejection, shutting down server...");
+  logger.error(`${err.name}: ${err.message}`);
+  server.catch(() => {
+    process.exit(1);
+  });
 });
 
 // DELETE /api/books/:id - Delete a book
@@ -82,6 +112,5 @@ app.delete('/api/books/:id', (req: Request, res: Response) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(` Books API running at http://localhost:${PORT}`);
+  console.log(` 😃 Books API running at http://localhost:${PORT}`);
 });
- 
