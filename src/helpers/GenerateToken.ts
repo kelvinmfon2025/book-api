@@ -4,7 +4,7 @@ import {
   AccessToken_Secret_Key,
   RefreshToken_Secret_Key,
   Tracking_Token_Secret_Key,
-} from "../serviceUrl";
+} from "../../serviceUrl";
 
 
 export const GenerateAccessToken = (payload: any) => {

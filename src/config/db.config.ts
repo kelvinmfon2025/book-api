@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import logger from "../middleware/logger";
-import { DB_URI } from "../serviceUrl";
+import { DB_URI } from "../../serviceUrl";
 
 const ConnectDB = async():Promise<void>=>{
     try {
