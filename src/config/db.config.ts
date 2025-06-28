@@ -15,6 +15,4 @@ const ConnectDB = async():Promise<void>=>{
 }
 
 
-
-
 export default ConnectDB;

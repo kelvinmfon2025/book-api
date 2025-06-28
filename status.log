@@ -27,3 +27,49 @@
 2025-06-22T17:09:23.677Z [[32minfo[39m]: Successfully connected to DB
 2025-06-22T17:09:23.675Z [[32minfo[39m]: Successfully connected to DB
 2025-06-22T17:09:23.704Z [[32minfo[39m]: Server running on port 3002
+2025-06-28T14:02:50.506Z [[32minfo[39m]: Successfully connected to DB
+2025-06-28T14:02:50.518Z [[32minfo[39m]: Server running on port 3002
+2025-06-28T14:03:01.527Z [[32minfo[39m]: POST - /auth/register
+2025-06-28T14:03:01.528Z [[33mwarn[39m]: Can not find /auth/register with POST on this server
+2025-06-28T14:03:15.455Z [[32minfo[39m]: POST - /v1/api/auth/register
+2025-06-28T14:03:15.456Z [[33mwarn[39m]: Can not find /v1/api/auth/register with POST on this server
+2025-06-28T14:04:16.221Z [[32minfo[39m]: Successfully connected to DB
+2025-06-28T14:04:16.234Z [[32minfo[39m]: Server running on port 3002
+2025-06-28T14:04:25.481Z [[32minfo[39m]: POST - /v1/api/auth/register
+2025-06-28T14:04:25.482Z [[33mwarn[39m]: Can not find /v1/api/auth/register with POST on this server
+2025-06-28T14:05:04.156Z [[32minfo[39m]: Successfully connected to DB
+2025-06-28T14:05:04.166Z [[32minfo[39m]: Server running on port 3002
+2025-06-28T14:05:09.101Z [[32minfo[39m]: POST - /v1/api/auth/register
+2025-06-28T14:18:16.875Z [[32minfo[39m]: Successfully connected to DB
+2025-06-28T14:18:16.882Z [[32minfo[39m]: Server running on port 3002
+2025-06-28T14:18:30.567Z [[32minfo[39m]: Successfully connected to DB
+2025-06-28T14:18:30.583Z [[32minfo[39m]: Server running on port 3002
+2025-06-28T14:22:26.095Z [[32minfo[39m]: Successfully connected to DB
+2025-06-28T14:22:26.119Z [[32minfo[39m]: Server running on port 3002
+2025-06-28T14:33:40.404Z [[32minfo[39m]: Successfully connected to DB
+2025-06-28T14:33:40.419Z [[32minfo[39m]: Server running on port 3002
+2025-06-28T14:35:22.103Z [[32minfo[39m]: Successfully connected to DB
+2025-06-28T14:35:22.109Z [[32minfo[39m]: Server running on port 3002
+2025-06-28T14:37:05.757Z [[32minfo[39m]: Successfully connected to DB
+2025-06-28T14:37:05.801Z [[32minfo[39m]: Server running on port 3002
+2025-06-28T14:39:57.142Z [[32minfo[39m]: Successfully connected to DB
+2025-06-28T14:39:57.147Z [[32minfo[39m]: Server running on port 3002
+2025-06-28T14:40:20.923Z [[32minfo[39m]: POST - /v1/api/auth/register
+2025-06-28T14:58:40.390Z [[32minfo[39m]: Successfully connected to DB
+2025-06-28T14:58:40.401Z [[32minfo[39m]: Server running on port 3002
+2025-06-28T15:00:16.257Z [[32minfo[39m]: POST - /v1/api/auth/register
+2025-06-28T15:02:26.575Z [[32minfo[39m]: Successfully connected to DB
+2025-06-28T15:02:26.596Z [[32minfo[39m]: Server running on port 3002
+2025-06-28T15:02:41.770Z [[32minfo[39m]: POST - /v1/api/auth/verify-email
+2025-06-28T15:05:19.915Z [[32minfo[39m]: GET - /v1/api/auth/login
+2025-06-28T15:05:19.916Z [[33mwarn[39m]: Can not find /v1/api/auth/login with GET on this server
+2025-06-28T15:05:30.039Z [[32minfo[39m]: PATCH - /v1/api/auth/login
+2025-06-28T15:06:56.767Z [[32minfo[39m]: Successfully connected to DB
+2025-06-28T15:06:56.788Z [[32minfo[39m]: Server running on port 3002
+2025-06-28T15:07:02.200Z [[32minfo[39m]: PATCH - /v1/api/auth/login
+2025-06-28T15:08:05.055Z [[32minfo[39m]: Successfully connected to DB
+2025-06-28T15:08:05.076Z [[32minfo[39m]: Server running on port 3002
+2025-06-28T15:08:10.945Z [[32minfo[39m]: PATCH - /v1/api/auth/login
+2025-06-28T15:09:10.477Z [[32minfo[39m]: Successfully connected to DB
+2025-06-28T15:09:10.496Z [[32minfo[39m]: Server running on port 3002
+2025-06-28T15:09:16.752Z [[32minfo[39m]: PATCH - /v1/api/auth/login
