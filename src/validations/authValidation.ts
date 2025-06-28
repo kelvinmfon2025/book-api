@@ -70,14 +70,11 @@ export const VerifyOtpSchema = z.object({
 
 
 export const loginSchema = z.object({
-  phone_email_or_username: z
-    .string({ required_error: "Email, Username or phone number is required" })
-    .refine(
-      (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) || /^\d{13}$/.test(val),
-      {
-        message: "Must be a valid username, email or an 11-digit phone number",
-      }
-    ),
+  email: z
+    .string({ required_error: 'Email is required' })
+    .email('Invalid email address')
+    .trim()
+    .toLowerCase(),
 
   password: z
     .string({ required_error: "Password is required" })
