@@ -62,3 +62,40 @@ export const createBook = catchAsync(
     }
   }
 );
+
+export const getAllBooks = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {}
+);
+
+export const getSpecificBook = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {}
+);
+
+export const updateBook = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {}
+);
+
+export const deleteBook = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {}
+);
+
+//KAZEEM
+
+//         Sprint 3: Borrowing System Endpoints
+// POST /api/borrow - Borrow a book (member only, updates User.borrowedBooks and Book.availableCopies).
+
+// POST /api/return/:borrowId - Return a borrowed book (member only, updates User.borrowedBooks and Book.availableCopies).
+
+// GET /api/users/:id/borrowed - Get a user’s borrowed books (authenticated user for their own books, admin/librarian for any user).
+
+export const borrowBook = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {}
+);
+
+export const returnBook = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {}
+);
+
+export const getUserBorrowedBooks = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {}
+);
