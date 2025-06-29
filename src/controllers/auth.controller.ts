@@ -5,33 +5,44 @@ import catchAsync from "../errors/catchAsync";
 import AppResponse from "../helpers/AppResponse";
 import { User } from "../model/user.model";
 import AppError from "../errors/AppError";
-import { User as IUser } from "../interfaces/user.interface";
-import { GenerateAccessToken, GenerateRefreshToken } from "../helpers/GenerateToken";
+import { IUser } from "../interfaces/user.interface";
+import {
+  GenerateAccessToken,
+  GenerateRefreshToken,
+} from "../helpers/GenerateToken";
 import { NODE_ENV, RefreshToken_Secret_Key } from "../../serviceUrl";
-import GenerateRandomId, { generateRandomAlphanumeric } from "../helpers/GenerateRandomId";
+import GenerateRandomId, {
+  generateRandomAlphanumeric,
+} from "../helpers/GenerateRandomId";
 import { logger } from "handlebars";
-
+import sendMail from "../config/nodemailer.config";
 
 export const registerHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { firstName, lastName, email, password, phone, address, role } = req.body;
+      const { firstName, lastName, email, password, phone, address, role } =
+        req.body;
 
       // Validate required fields
       if (!firstName || !email || !password) {
-        return next(new AppError('First name, email, and password are required', 400));
+        return next(
+          new AppError("First name, email, and password are required", 400)
+        );
       }
 
       // Check if user exists
       const userExists = await User.findOne({ email });
+
       if (userExists) {
-        return next(new AppError('Email already exists', 400));
+        return next(new AppError("Email already exists", 400));
       }
 
       // Validate role
-      const validRoles = ['member', 'librarian', 'admin'];
+      const validRoles = ["member", "librarian", "admin"];
       if (role && !validRoles.includes(role)) {
-        return next(new AppError('Invalid role. Must be member, librarian, or admin', 400));
+        return next(
+          new AppError("Invalid role. Must be member, librarian, or admin", 400)
+        );
       }
 
       // Hash password
@@ -40,86 +51,152 @@ export const registerHandler = catchAsync(
       // Create user
       const user = new User({
         firstName,
-        lastName: lastName || '',
+        lastName: lastName || "",
         email,
         password: hashedPassword,
         phone,
         address,
-        role: role || 'member', // Default to 'member' if not provided
+        role: role || "member", // Default to 'member' if not provided
         borrowedBooks: [],
       });
 
-      await user.save();
+      const otpCode = generateRandomAlphanumeric();
+      user.otp = otpCode;
+      user.otpExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-      // Generate JWT access token
-      const token = GenerateAccessToken({ id: String(user._id), role: user.role });
-
-      // Prepare response data
-      const account = {
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        role: user.role,
-        phone: user.phone,
-        address: user.address,
+      const mailOptions = {
+        email,
+        subject: "Verify Your Email Address",
+        templateName: "verifyEmail",
+        context: { name: firstName, otpCode },
       };
 
-      return AppResponse(res, 'Registration successful', 201, { account, token });
+      await user.save();
+
+      const maxRetries = 3;
+      let attempts = 0;
+      let emailSent = false;
+
+      while (attempts < maxRetries && !emailSent) {
+        try {
+          await sendMail(mailOptions);
+          emailSent = true;
+        } catch (error) {
+          attempts++;
+          console.error(`Attempt ${attempts} failed:`, error);
+          if (attempts >= maxRetries) {
+            console.log(
+              `Failed to send email to ${email} after ${maxRetries} attempts.`
+            );
+          }
+        }
+      }
+
+      // Prepare response data
+      // const account = {
+      //   id: user._id,
+      //   firstName: user.firstName,
+      //   lastName: user.lastName,
+      //   email: user.email,
+      //   role: user.role,
+      //   phone: user.phone,
+      //   address: user.address,
+      // };
+
+      const account = { firstName, lastName, email, role, phone };
+
+      return AppResponse(
+        res,
+        "Registration successful, please check email to verify.",
+        201,
+        account
+      );
     } catch (error) {
-      console.error('Error during registration:', error);
-      return next(new AppError('Registration failed', 500));
+      console.error("Error during registration:", error);
+      return next(new AppError("Registration failed", 500));
     }
   }
 );
 
-//For Kelvin
 
-// This is what you need to do to write the login handler function
-// Login Handler
-// This function will handle user login, validate credentials, and return access and refresh tokens.  
-
-export const loginHandler = catchAsync(
+export const verifyEmailHandler = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
-     
+        try {
+            const { otp, email } = req.body as { otp: string; email: string };
+
+            const findUser: any = await User.findOne({ email })
+                .select("+password");
+
+            if (!findUser) {
+                return next(new AppError("User not found", 404));
+            }
+
+            const userDate = findUser.otpExpires;
+            const dateToCheck = userDate ? new Date(userDate) : new Date(0);
+            const now = new Date();
+
+            if (findUser.otp === otp) {
+                if (findUser.isEmailVerified) {
+                    return next(
+                        new AppError("This user has already verified their account.", 400)
+                    );
+                }
+
+                // Check if current time is past the expiration time
+                if (now > dateToCheck) {
+                    return next(
+                        new AppError("This OTP has expired. Please request a new one.", 400)
+                    );
+                } else {
+                    findUser.isEmailVerified = true;
+                    findUser.otp = "";
+                    findUser.otpExpires = null;
+                    await findUser.save();
+
+                    // Send welcome email
+                    await sendMail({
+                        email: findUser.email,
+                        subject: "Welcome to BookAPP!",
+                        templateName: "welcome",
+                        context: { name: findUser.name || "User" }, // Use name if available
+                    }).catch((error: Error) =>
+                        console.error("Failed to send welcome email:", error)
+                    );
+
+                    findUser.password = undefined;
+
+                    const account = {
+                        id: findUser._id,
+                        firstName: findUser.firstName + " " + findUser.lastName,
+                        email: findUser.email,
+                        role: findUser.role,
+                    };
+
+                    const accessToken: string | undefined = GenerateAccessToken(account);
+                    const refreshToken: string | undefined = GenerateRefreshToken(account);
+
+                    return AppResponse(
+                        res,
+                        "User verification successful.",
+                        200,
+                        {
+                            accessToken: accessToken,
+                            refreshToken: refreshToken,
+                            account: findUser,
+                        }
+                    );
+                }
+            }
+
+            // Add this line to handle invalid OTP
+            return next(new AppError("Invalid OTP code", 400));
+
+        } catch (error) {
+            console.error("Error during email verification:", error);
+            return next(new AppError("Email verification failed", 500));
+        }
     }
 );
-
-//For Betty
-
-// chanegePasswordHandler
-// This function will handle changing the user's password, validating the old password, and updating to a new password.
-export const changePasswordHandler = catchAsync(
-    async (req: Request, res: Response, next: NextFunction) => {
-
-})
-
-
-//For Kazeem
-
-// resetpasswordHandler
-// This function will handle resetting the user's password using a reset token, validating the token, and updating the password.
-export const resetPasswordHandler = catchAsync(
-    async (req: Request, res: Response, next: NextFunction) => { 
-
-})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // // Resend Verification Email
@@ -166,79 +243,94 @@ export const resetPasswordHandler = catchAsync(
 
 // // Login Handler
 
-// export const loginHandler = catchAsync(
-//     async (req: Request, res: Response, next: NextFunction) => {
-//         const isMobile = req.headers.mobilereqsender;
-//         const { phone_email_or_username, password } = req.body;
-//         console.log("Login Request:", { phone_email_or_username, password });
+export const loginHandler = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+   try {
+     const isMobile = req.headers.mobilereqsender;
+    const { email, password } = req.body;
 
-//         const user: any = await User.findOne({
-//             $or: [{ email: phone_email_or_username }, { phone_number: phone_email_or_username }, { username: phone_email_or_username }],
-//         })
-//             .select("+password")
-//             .populate("store");
+    const user: IUser | null = await User.findOne({ email })
+      .select("+password")
 
-//         console.log("User Found:", user ? user.email : "No user");
-//         if (!user) return next(new AppError("User not found", 404));
+    if (!user) return next(new AppError("User not found", 404));
 
-//         const isMatch = await bcrypt.compare(password, user.password);
-//         console.log("Password Match:", isMatch);
-//         if (!isMatch) return next(new AppError("Invalid credentials", 401));
-//         if (!user.isEmailVerified)
-//             return next(new AppError("Please verify your email before log in.", 401));
+    const isMatch = await bcrypt.compare(password, user.password);
 
-//         const account = {
-//             id: user._id,
-//             name: user.name,
-//             username: user.username,
-//             email: user.email,
-//             role: user.role,
-//         };
-//         console.log("Account:", account);
+    if (!isMatch) return next(new AppError("Invalid credentials", 401));
+    if (!user.isEmailVerified)
+      return next(new AppError("Please verify your email before log in.", 401));
 
-//         const accessToken = GenerateAccessToken(account);
-//         const refreshToken = GenerateRefreshToken(account);
-//         console.log("Tokens:", { accessToken, refreshToken });
+    const account = {
+      id: user._id,
+      name: user.firstName + " " + user.lastName,
+      email: user.email,
+      role: user.role,
+    };
 
-//         user.password = undefined;
-//         await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
+    const accessToken = GenerateAccessToken(account);
+    const refreshToken = GenerateRefreshToken(account);
+    console.log("Tokens:", { accessToken, refreshToken });
 
-//         if (isMobile)
-//             return AppResponse(res, "Login successful", 200, {
-//                 accessToken,
-//                 refreshToken,
-//                 account: user,
-//             });
+    user.password = "";
+    await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
 
-//         res.cookie("e_access_token", accessToken, {
-//             httpOnly: true,
-//             secure: process.env.NODE_ENV === "production",
-//             sameSite: "none",
-//             partitioned: true,
-//             priority: "high",
-//             signed: true,
-//             maxAge: 60 * 24 * 60 * 60 * 1000,
-//             expires: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
-//         });
+    if (isMobile)
+      return AppResponse(res, "Login successful", 200, {
+        accessToken,
+        refreshToken,
+        account: user,
+      });
 
-//         res.cookie("e_refresh_token", refreshToken, {
-//             httpOnly: true,
-//             secure: process.env.NODE_ENV === "production",
-//             sameSite: "none",
-//             partitioned: true,
-//             signed: true,
-//             priority: "high",
-//             maxAge: 60 * 24 * 60 * 60 * 1000,
-//             expires: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
-//         });
+    res.cookie("e_access_token", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      partitioned: true,
+      priority: "high",
+      signed: true,
+      maxAge: 60 * 24 * 60 * 60 * 1000,
+      expires: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+    });
 
-//         return AppResponse(res, "Login successful", 200, {
-//             accessToken,
-//             refreshToken,
-//             account: user,
-//         });
-//     }
-// );
+    res.cookie("e_refresh_token", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      partitioned: true,
+      signed: true,
+      priority: "high",
+      maxAge: 60 * 24 * 60 * 60 * 1000,
+      expires: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+    });
+
+    return AppResponse(res, "Login successful", 200, {
+      accessToken,
+      refreshToken,
+      account: user,
+    });
+    
+   } catch (error) {
+    console.error("Error during login:", error);
+    return next(new AppError("Login failed", 500));
+    
+   }
+  }
+);
+
+// chanegePasswordHandler
+// This function will handle changing the user's password, validating the old password, and updating to a new password.
+export const changePasswordHandler = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {}
+);
+
+//For Kazeem
+
+// resetpasswordHandler
+// This function will handle resetting the user's password using a reset token, validating the token, and updating the password.
+export const resetPasswordHandler = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {}
+);
+
 
 
 // export const forgotPasswordHandler = catchAsync(
@@ -331,7 +423,6 @@ export const resetPasswordHandler = catchAsync(
 //         const userId = (req.user as IUser)._id;
 
 //         // console.log("Change Password Request:", { userId, currentPassword, newPassword });
-        
 
 //         // Find user
 //         const user = await User.findById(userId).select("+password");
@@ -451,9 +542,6 @@ export const resetPasswordHandler = catchAsync(
 //     }
 // );
 
-
-
-
 // //Completed
 
 // export const logOutHandler = catchAsync(
@@ -468,7 +556,6 @@ export const resetPasswordHandler = catchAsync(
 // );
 // export const refreshAccessTokenHandler = catchAsync(
 //     async (req: Request, res: Response, next: NextFunction) => {
-
 
 //         if (!req.headers.authorization) {
 //             return next(new AppError("No authorization header provided", 401));

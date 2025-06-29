@@ -13,7 +13,8 @@ import ConnectDB from "./src/config/db.config";
 import AppError from "./src/errors/AppError";
 import GlobalErrorHandler from "./src/errors/errorHandler";
 import authRoutes from "./src/routes/auth.route";
-// import userRoutes from "./src/routes/user.routes";
+import userRoutes from "./src/routes/user.route";
+import bookRoutes from "./src/routes/book.routes";
 
 import Limiter from "./src/middleware/rateLimit";
 import logger, { logRequest } from "./src/middleware/logger";
@@ -23,6 +24,7 @@ dotenv.config();
 const port = PORT || 8081;
 
 const app = express();
+
 process.on("uncaughtException", (err: Error) => {
   logger.error("Unhandled Exception, shutting down...");
   logger.error(`${err.name}: ${err.message}`);
@@ -32,6 +34,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set("trust proxy", 1);
 app.use(multer().any());
+
 
 
 app.use(
@@ -65,7 +68,9 @@ const shouldCompress = (req: express.Request, res: express.Response) => {
 app.use(compression({ filter: shouldCompress }));
 
 //All Routes comes in Here
-app.use("/auth", authRoutes);
+app.use("/v1/api/auth", authRoutes);
+app.use("/v1/api/user", userRoutes);
+app.use("/v1/api/book", bookRoutes);
 
 
 app.get("/", (req: Request, res: Response, next: NextFunction) => {

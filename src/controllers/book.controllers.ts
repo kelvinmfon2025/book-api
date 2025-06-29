@@ -1,55 +1,64 @@
-// import { Request, Response } from 'express';
-// import { v4 as uuidv4 } from 'uuid';
+import { Request, Response, NextFunction } from "express";
+import catchAsync from "../errors/catchAsync";
+import AppResponse from "../helpers/AppResponse";
+import AppError from "../errors/AppError";
+import { IUser } from "../interfaces/user.interface";
+import { BookModel } from "../model/book.model";
+import { User } from "../model/user.model";
+import { logger } from "handlebars";
 
+// This controller handles  books
+export const createBook = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const {
+        title,
+        authors,
+        isbn,
+        publisher,
+        publicationYear,
+        genres,
+        language,
+        totalCopies,
+        availableCopies,
+        location,
+        description,
+        coverImage,
+      } = req.body;
 
+      // Validate required fields
+      if (
+        !title ||
+        !authors ||
+        !isbn ||
+        !genres ||
+        !totalCopies ||
+        availableCopies === undefined
+      ) {
+        return next(new AppError("Missing required fields", 400));
+      }
 
-// class BookController {
-//   static getAllBooks(req: Request, res: Response): Response {
-//     return res.json(books);
-//   }
+      const newBook = new BookModel({
+        title,
+        authors,
+        isbn,
+        publisher,
+        publicationYear,
+        genres,
+        language,
+        totalCopies,
+        availableCopies,
+        location,
+        description,
+        coverImage,
+      });
 
-//   static getBookById(req: Request, res: Response): Response {
-//     const book = books.find(b => b.id === req.params.id);
-//     if (!book) {
-//       return res.status(404).json({ message: 'Book not found' });
-//     }
-//     return res.json(book);
-//   }
+      await newBook.save();
 
-//   static createBook(req: Request, res: Response): Response {
-//     const { title, author, year } = req.body;
-//     if (!title || !author || !year) {
-//       return res.status(400).json({ message: 'Missing required fields' });
-//     }
-//     const newBook: Book = {
-//       id: uuidv4(),
-//       title,
-//       author,
-//       year: parseInt(year)
-//     };
-//     books.push(newBook);
-//     return res.status(201).json(newBook);
-//   }
-
-//   static updateBook(req: Request, res: Response): Response {
-//     const bookIndex = books.findIndex(b => b.id === req.params.id);
-//     if (bookIndex === -1) {
-//       return res.status(404).json({ message: 'Book not found' });
-//     }
-//     const { title, author, year } = req.body;
-//     if (!title || !author || !year) {
-//       return res.status(400).json({ message: 'Missing required fields' });
-//     }
-//     books[bookIndex] = { ...books[bookIndex], title, author, year: parseInt(year) };
-//     return res.json(books[bookIndex]);
-//   }
-
-//   static deleteBook(req: Request, res: Response): Response {
-//     const bookIndex = books.findIndex(b => b.id === req.params.id);
-//     if (bookIndex === -1) {
-//       return res.status(404).json({ message: 'Book not found' });
-//     }
-//     const deletedBook = books.splice(bookIndex, 1);
-//     return res.json(deletedBook[0]);
-//   }
-// }
+      return AppResponse(res, "Book created successfully", 201, newBook);
+    } catch (error) {
+      console.error("Error creating book:", error);
+      return next(new AppError("Failed to create book", 500));
+    }
+  }
+);
