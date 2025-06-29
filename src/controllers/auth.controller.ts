@@ -38,7 +38,7 @@ export const registerHandler = catchAsync(
       }
 
       // Validate role
-      const validRoles = ["member", "librarian", "admin"];
+      const validRoles = ["member", "librarian", "standard"];
       if (role && !validRoles.includes(role)) {
         return next(
           new AppError("Invalid role. Must be member, librarian, or admin", 400)
@@ -117,6 +117,7 @@ export const registerHandler = catchAsync(
     }
   }
 );
+
 
 export const verifyEmailHandler = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
