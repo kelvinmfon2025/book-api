@@ -1,11 +1,11 @@
-import mongoose, { Schema } from 'mongoose';
-import { User as IUser } from '../interfaces/user.interface';
+import mongoose, { Schema } from "mongoose";
+import { User as IUser } from "../interfaces/user.interface";
 
 const userSchema: Schema<IUser> = new Schema<IUser>(
   {
     firstName: {
       type: String,
-      required: [true, 'First name is required'],
+      required: [true, "First name is required"],
       trim: true,
     },
     lastName: {
@@ -15,21 +15,21 @@ const userSchema: Schema<IUser> = new Schema<IUser>(
     email: {
       type: String,
       required: true,
-      unique: [true, 'Email already exists'],
+      unique: [true, "Email already exists"],
       trim: true,
       lowercase: true,
-      match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email'],
+      match: [/^\S+@\S+\.\S+$/, "Please provide a valid email"],
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
-      minlength: [6, 'Password must be at least 6 characters'],
+      required: [true, "Password is required"],
+      minlength: [6, "Password must be at least 6 characters"],
       select: false, // Exclude password by default in queries
     },
     phone: {
       type: String,
       trim: true,
-      match: [/^\d+.*/, 'Please provide a valid phone number'],
+      match: [/^\d+.*/, "Please provide a valid phone number"],
     },
     address: {
       type: String,
@@ -37,15 +37,15 @@ const userSchema: Schema<IUser> = new Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ['member', 'standard', 'librarian'],
-      default: 'member',
+      enum: ["member", "standard", "librarian"],
+      default: "member",
       required: true,
     },
     borrowedBooks: [
       {
         bookId: {
           type: Schema.Types.ObjectId,
-          ref: 'Book', // Reference to Book model
+          ref: "Book", // Reference to Book model
           required: true,
         },
         borrowDate: {
@@ -58,10 +58,13 @@ const userSchema: Schema<IUser> = new Schema<IUser>(
         },
       },
     ],
+    isEmailVerified: { type: Boolean, default: false },
+    otp: { type: String }, // OTP for email verification
+    otpExpires: { type: Date },
   },
   {
     timestamps: true, // Adds createdAt and updatedAt
   }
 );
 
-export const User = mongoose.model<IUser>('User', userSchema);
+export const User = mongoose.model<IUser>("User", userSchema);
