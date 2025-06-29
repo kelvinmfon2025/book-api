@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import AppError from '../errors/AppError';
-import { IUser } from '../interfaces/IUser';
+import { IUser } from '../interfaces/user.interface'
 
 function CheckRole(allowedRoles: string | string[]) {
     const rolesArray = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];

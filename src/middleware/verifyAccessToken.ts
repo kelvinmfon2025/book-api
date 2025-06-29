@@ -6,8 +6,8 @@ import AppError from "../errors/AppError";
 import {
   AccessToken_Secret_Key,
   Tracking_Token_Secret_Key,
-} from "../serviceUrl";
-import { User } from "../models/user.model";
+} from '../../serviceUrl'
+import { User } from "../model/user.model";
 
 interface CustomRequest extends Request {
   user?: any;
@@ -68,6 +68,11 @@ const VerifyAccessToken = async (
 };
 
 export default VerifyAccessToken;
+
+
+
+
+
 
 export const VerifyTrackingToken = async (
   req: CustomRequest,
