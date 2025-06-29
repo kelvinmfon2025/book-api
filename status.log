@@ -119,3 +119,5 @@
 2025-06-29T16:50:26.886Z [[32minfo[39m]: Successfully connected to DB
 2025-06-29T16:50:26.904Z [[32minfo[39m]: Server running on port 3002
 2025-06-29T16:50:33.771Z [[32minfo[39m]: POST - /v1/api/book/create-book
+2025-06-29T17:20:10.368Z [[31merror[39m]: Error connecting to DB
+2025-06-29T17:20:10.371Z [[32minfo[39m]: Server running on port 8081
