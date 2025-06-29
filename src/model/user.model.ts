@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { User as IUser } from "../interfaces/user.interface";
+import { IUser } from "../interfaces/user.interface";
 
 const userSchema: Schema<IUser> = new Schema<IUser>(
   {
@@ -37,7 +37,7 @@ const userSchema: Schema<IUser> = new Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ["member", "standard", "librarian"],
+      enum: ["member", "admin", "librarian"],
       default: "member",
       required: true,
     },

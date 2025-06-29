@@ -79,3 +79,43 @@
 2025-06-29T15:12:23.529Z [[32minfo[39m]: Server running on port 3002
 2025-06-29T15:12:38.046Z [[32minfo[39m]: Successfully connected to DB
 2025-06-29T15:12:38.065Z [[32minfo[39m]: Server running on port 3002
+2025-06-29T15:39:07.943Z [[32minfo[39m]: Successfully connected to DB
+2025-06-29T15:39:07.949Z [[32minfo[39m]: Server running on port 3002
+2025-06-29T15:47:34.361Z [[32minfo[39m]: Successfully connected to DB
+2025-06-29T15:47:34.387Z [[32minfo[39m]: Server running on port 3002
+2025-06-29T15:49:24.746Z [[32minfo[39m]: POST - /v1/api/auth/register
+2025-06-29T15:53:05.638Z [[32minfo[39m]: Successfully connected to DB
+2025-06-29T15:53:05.654Z [[32minfo[39m]: Server running on port 3002
+2025-06-29T15:53:14.068Z [[32minfo[39m]: PATCH - /v1/api/auth/login
+2025-06-29T16:10:45.962Z [[32minfo[39m]: Successfully connected to DB
+2025-06-29T16:10:45.966Z [[32minfo[39m]: Server running on port 3002
+2025-06-29T16:17:38.134Z [[32minfo[39m]: Successfully connected to DB
+2025-06-29T16:17:38.159Z [[32minfo[39m]: Server running on port 3002
+2025-06-29T16:17:51.538Z [[32minfo[39m]: Successfully connected to DB
+2025-06-29T16:17:51.545Z [[32minfo[39m]: Server running on port 3002
+2025-06-29T16:19:10.542Z [[32minfo[39m]: POST - /v1/api/user/profile
+2025-06-29T16:19:10.544Z [[33mwarn[39m]: Can not find /v1/api/user/profile with POST on this server
+2025-06-29T16:19:20.387Z [[32minfo[39m]: GET - /v1/api/user/profile
+2025-06-29T16:29:53.061Z [[32minfo[39m]: Successfully connected to DB
+2025-06-29T16:29:53.074Z [[32minfo[39m]: Server running on port 3002
+2025-06-29T16:37:03.524Z [[32minfo[39m]: Successfully connected to DB
+2025-06-29T16:37:03.534Z [[32minfo[39m]: Server running on port 3002
+2025-06-29T16:40:23.766Z [[32minfo[39m]: Successfully connected to DB
+2025-06-29T16:40:23.772Z [[32minfo[39m]: Server running on port 3002
+2025-06-29T16:42:01.684Z [[32minfo[39m]: POST - /v1/api/book/create-book
+2025-06-29T16:42:53.238Z [[32minfo[39m]: POST - /v1/api/book/create-book
+2025-06-29T16:43:21.840Z [[32minfo[39m]: Successfully connected to DB
+2025-06-29T16:43:21.860Z [[32minfo[39m]: Server running on port 3002
+2025-06-29T16:43:27.099Z [[32minfo[39m]: POST - /v1/api/book/create-book
+2025-06-29T16:44:48.879Z [[32minfo[39m]: Successfully connected to DB
+2025-06-29T16:44:48.890Z [[32minfo[39m]: Server running on port 3002
+2025-06-29T16:44:55.975Z [[32minfo[39m]: POST - /v1/api/book/create-book
+2025-06-29T16:45:38.733Z [[32minfo[39m]: Successfully connected to DB
+2025-06-29T16:45:38.748Z [[32minfo[39m]: Server running on port 3002
+2025-06-29T16:45:55.368Z [[32minfo[39m]: POST - /v1/api/book/create-book
+2025-06-29T16:49:38.026Z [[32minfo[39m]: Successfully connected to DB
+2025-06-29T16:49:38.030Z [[32minfo[39m]: Server running on port 3002
+2025-06-29T16:49:46.048Z [[32minfo[39m]: POST - /v1/api/book/create-book
+2025-06-29T16:50:26.886Z [[32minfo[39m]: Successfully connected to DB
+2025-06-29T16:50:26.904Z [[32minfo[39m]: Server running on port 3002
+2025-06-29T16:50:33.771Z [[32minfo[39m]: POST - /v1/api/book/create-book

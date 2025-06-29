@@ -5,7 +5,7 @@ import catchAsync from "../errors/catchAsync";
 import AppResponse from "../helpers/AppResponse";
 import { User } from "../model/user.model";
 import AppError from "../errors/AppError";
-import { User as IUser } from "../interfaces/user.interface";
+import { IUser } from "../interfaces/user.interface";
 import {
   GenerateAccessToken,
   GenerateRefreshToken,
@@ -38,7 +38,7 @@ export const registerHandler = catchAsync(
       }
 
       // Validate role
-      const validRoles = ["member", "librarian", "standard"];
+      const validRoles = ["member", "librarian", "admin"];
       if (role && !validRoles.includes(role)) {
         return next(
           new AppError("Invalid role. Must be member, librarian, or admin", 400)
