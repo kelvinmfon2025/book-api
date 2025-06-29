@@ -13,7 +13,8 @@ import ConnectDB from "./src/config/db.config";
 import AppError from "./src/errors/AppError";
 import GlobalErrorHandler from "./src/errors/errorHandler";
 import authRoutes from "./src/routes/auth.route";
-// import userRoutes from "./src/routes/user.routes";
+import userRoutes from "./src/routes/user.route";
+import bookRoutes from "./src/routes/book.routes";
 
 import Limiter from "./src/middleware/rateLimit";
 import logger, { logRequest } from "./src/middleware/logger";
@@ -68,6 +69,8 @@ app.use(compression({ filter: shouldCompress }));
 
 //All Routes comes in Here
 app.use("/v1/api/auth", authRoutes);
+app.use("/v1/api/user", userRoutes);
+app.use("/v1/api/book", bookRoutes);
 
 
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
