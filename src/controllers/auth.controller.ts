@@ -328,7 +328,34 @@ export const changePasswordHandler = catchAsync(
 // resetpasswordHandler
 // This function will handle resetting the user's password using a reset token, validating the token, and updating the password.
 export const resetPasswordHandler = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {}
+  async (req: Request, res: Response, next: NextFunction) => {const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: 'Token and new password are required' });
+    }
+
+    try {
+      // Verify the JWT token and extract user ID
+      const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
+
+      // Find the user by ID
+      const user = await User.findById(decoded.id);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Hash the new password
+      const salt = await bcrypt.genSalt(12);
+      user.password = await bcrypt.hash(newPassword, salt);
+
+      // Save the updated user
+      await user.save();
+
+      return res.status(200).json({ message: 'Password has been successfully reset.' });
+    } catch (error) {
+      return res.status(401).json({ message: 'Invalid or expired token' });
+    }
+}
 );
 
 
