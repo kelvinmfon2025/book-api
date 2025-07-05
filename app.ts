@@ -7,7 +7,7 @@ import helmet from "helmet";
 import compression from "compression";
 import http from "http";
 import path from "path";
-import multer from 'multer';
+import multer from "multer";
 
 import ConnectDB from "./src/config/db.config";
 import AppError from "./src/errors/AppError";
@@ -15,6 +15,7 @@ import GlobalErrorHandler from "./src/errors/errorHandler";
 import authRoutes from "./src/routes/auth.route";
 import userRoutes from "./src/routes/user.route";
 import bookRoutes from "./src/routes/book.routes";
+import reservationRoutes from "./src/routes/reservation.route";
 
 import Limiter from "./src/middleware/rateLimit";
 import logger, { logRequest } from "./src/middleware/logger";
@@ -35,8 +36,6 @@ app.use(express.urlencoded({ extended: true }));
 app.set("trust proxy", 1);
 app.use(multer().any());
 
-
-
 app.use(
   cors({
     origin: "*",
@@ -45,9 +44,11 @@ app.use(
 );
 
 app.use(cookieParser(COOKIE_SECRET));
-app.use(helmet({
-  contentSecurityPolicy: false,
-}));
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
 
 //set view engine
 app.set("views", path.join(__dirname, "src/views"));
@@ -71,7 +72,7 @@ app.use(compression({ filter: shouldCompress }));
 app.use("/v1/api/auth", authRoutes);
 app.use("/v1/api/user", userRoutes);
 app.use("/v1/api/book", bookRoutes);
-
+app.use("/v1/api/reservation", reservationRoutes);
 
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
   res.send("Hi");
@@ -100,4 +101,3 @@ process.on("unhandledRejection", (err: Error) => {
     process.exit(1);
   });
 });
-
