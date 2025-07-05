@@ -7,6 +7,7 @@ export interface IUser extends Document {
   password: string;
   phone?: string;
   address?: string;
+  bio?: string;
   role: 'member' | 'librarian' | 'admin';
   borrowedBooks: Array<{
     bookId: mongoose.Types.ObjectId;
