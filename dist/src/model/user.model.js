@@ -38,7 +38,7 @@ const mongoose_1 = __importStar(require("mongoose"));
 const userSchema = new mongoose_1.Schema({
     firstName: {
         type: String,
-        required: [true, 'First name is required'],
+        required: [true, "First name is required"],
         trim: true,
     },
     lastName: {
@@ -48,21 +48,21 @@ const userSchema = new mongoose_1.Schema({
     email: {
         type: String,
         required: true,
-        unique: [true, 'Email already exists'],
+        unique: [true, "Email already exists"],
         trim: true,
         lowercase: true,
-        match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email'],
+        match: [/^\S+@\S+\.\S+$/, "Please provide a valid email"],
     },
     password: {
         type: String,
-        required: [true, 'Password is required'],
-        minlength: [6, 'Password must be at least 6 characters'],
+        required: [true, "Password is required"],
+        minlength: [6, "Password must be at least 6 characters"],
         select: false, // Exclude password by default in queries
     },
     phone: {
         type: String,
         trim: true,
-        match: [/^\d+.*/, 'Please provide a valid phone number'],
+        match: [/^\d+.*/, "Please provide a valid phone number"],
     },
     address: {
         type: String,
@@ -70,15 +70,15 @@ const userSchema = new mongoose_1.Schema({
     },
     role: {
         type: String,
-        enum: ['member', 'standard', 'librarian'],
-        default: 'member',
+        enum: ["member", "admin", "librarian"],
+        default: "member",
         required: true,
     },
     borrowedBooks: [
         {
             bookId: {
                 type: mongoose_1.Schema.Types.ObjectId,
-                ref: 'Book', // Reference to Book model
+                ref: "Book", // Reference to Book model
                 required: true,
             },
             borrowDate: {
@@ -91,7 +91,10 @@ const userSchema = new mongoose_1.Schema({
             },
         },
     ],
+    isEmailVerified: { type: Boolean, default: false },
+    otp: { type: String }, // OTP for email verification
+    otpExpires: { type: Date },
 }, {
     timestamps: true, // Adds createdAt and updatedAt
 });
-exports.User = mongoose_1.default.model('User', userSchema);
+exports.User = mongoose_1.default.model("User", userSchema);

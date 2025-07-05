@@ -6,8 +6,7 @@
     "build": "tsc",
     "stage": "tsc && git add .",
     "dev": "nodemon app.ts",
-    "start": "node dist/app.js",
-    "postinstall": "tsc"
+    "start": "node dist/app.js"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +19,7 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "express": "^4.19.2",
+    "express": "^4.21.2",
     "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^7.5.0",
     "handlebars": "^4.7.8",

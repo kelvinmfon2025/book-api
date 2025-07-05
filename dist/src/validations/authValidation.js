@@ -68,11 +68,11 @@ exports.VerifyOtpSchema = zod_1.z.object({
     }),
 });
 exports.loginSchema = zod_1.z.object({
-    phone_email_or_username: zod_1.z
-        .string({ required_error: "Email, Username or phone number is required" })
-        .refine((val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) || /^\d{13}$/.test(val), {
-        message: "Must be a valid username, email or an 11-digit phone number",
-    }),
+    email: zod_1.z
+        .string({ required_error: 'Email is required' })
+        .email('Invalid email address')
+        .trim()
+        .toLowerCase(),
     password: zod_1.z
         .string({ required_error: "Password is required" })
         .min(8, "Password must be at least 8 characters long")

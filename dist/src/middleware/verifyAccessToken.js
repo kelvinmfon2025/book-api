@@ -16,8 +16,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.VerifyTrackingToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const AppError_1 = __importDefault(require("../errors/AppError"));
-const serviceUrl_1 = require("../serviceUrl");
-const user_model_1 = require("../models/user.model");
+const serviceUrl_1 = require("../../serviceUrl");
+const user_model_1 = require("../model/user.model");
 const VerifyAccessToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let token;

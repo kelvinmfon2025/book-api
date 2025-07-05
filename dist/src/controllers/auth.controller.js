@@ -12,61 +12,142 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerHandler = void 0;
+exports.resetPasswordHandler = exports.changePasswordHandler = exports.loginHandler = exports.verifyEmailHandler = exports.registerHandler = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const catchAsync_1 = __importDefault(require("../errors/catchAsync"));
 const AppResponse_1 = __importDefault(require("../helpers/AppResponse"));
 const user_model_1 = require("../model/user.model");
 const AppError_1 = __importDefault(require("../errors/AppError"));
 const GenerateToken_1 = require("../helpers/GenerateToken");
+const GenerateRandomId_1 = require("../helpers/GenerateRandomId");
+const nodemailer_config_1 = __importDefault(require("../config/nodemailer.config"));
 exports.registerHandler = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { firstName, lastName, email, password, phone, address, role } = req.body;
         // Validate required fields
         if (!firstName || !email || !password) {
-            return next(new AppError_1.default('First name, email, and password are required', 400));
+            return next(new AppError_1.default("First name, email, and password are required", 400));
         }
         // Check if user exists
         const userExists = yield user_model_1.User.findOne({ email });
         if (userExists) {
-            return next(new AppError_1.default('Email already exists', 400));
+            return next(new AppError_1.default("Email already exists", 400));
         }
         // Validate role
-        const validRoles = ['member', 'librarian', 'admin'];
+        const validRoles = ["member", "librarian", "admin"];
         if (role && !validRoles.includes(role)) {
-            return next(new AppError_1.default('Invalid role. Must be member, librarian, or admin', 400));
+            return next(new AppError_1.default("Invalid role. Must be member, librarian, or admin", 400));
         }
         // Hash password
         const hashedPassword = yield bcryptjs_1.default.hash(password, 10);
         // Create user
         const user = new user_model_1.User({
             firstName,
-            lastName: lastName || '',
+            lastName: lastName || "",
             email,
             password: hashedPassword,
             phone,
             address,
-            role: role || 'member', // Default to 'member' if not provided
+            role: role || "member", // Default to 'member' if not provided
             borrowedBooks: [],
         });
-        yield user.save();
-        // Generate JWT access token
-        const token = (0, GenerateToken_1.GenerateAccessToken)({ id: String(user._id), role: user.role });
-        // Prepare response data
-        const account = {
-            id: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            role: user.role,
-            phone: user.phone,
-            address: user.address,
+        const otpCode = (0, GenerateRandomId_1.generateRandomAlphanumeric)();
+        user.otp = otpCode;
+        user.otpExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+        const mailOptions = {
+            email,
+            subject: "Verify Your Email Address",
+            templateName: "verifyEmail",
+            context: { name: firstName, otpCode },
         };
-        return (0, AppResponse_1.default)(res, 'Registration successful', 201, { account, token });
+        yield user.save();
+        const maxRetries = 3;
+        let attempts = 0;
+        let emailSent = false;
+        while (attempts < maxRetries && !emailSent) {
+            try {
+                yield (0, nodemailer_config_1.default)(mailOptions);
+                emailSent = true;
+            }
+            catch (error) {
+                attempts++;
+                console.error(`Attempt ${attempts} failed:`, error);
+                if (attempts >= maxRetries) {
+                    console.log(`Failed to send email to ${email} after ${maxRetries} attempts.`);
+                }
+            }
+        }
+        // Prepare response data
+        // const account = {
+        //   id: user._id,
+        //   firstName: user.firstName,
+        //   lastName: user.lastName,
+        //   email: user.email,
+        //   role: user.role,
+        //   phone: user.phone,
+        //   address: user.address,
+        // };
+        const account = { firstName, lastName, email, role, phone };
+        return (0, AppResponse_1.default)(res, "Registration successful, please check email to verify.", 201, account);
     }
     catch (error) {
-        console.error('Error during registration:', error);
-        return next(new AppError_1.default('Registration failed', 500));
+        console.error("Error during registration:", error);
+        return next(new AppError_1.default("Registration failed", 500));
+    }
+}));
+exports.verifyEmailHandler = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { otp, email } = req.body;
+        const findUser = yield user_model_1.User.findOne({ email })
+            .select("+password");
+        if (!findUser) {
+            return next(new AppError_1.default("User not found", 404));
+        }
+        const userDate = findUser.otpExpires;
+        const dateToCheck = userDate ? new Date(userDate) : new Date(0);
+        const now = new Date();
+        if (findUser.otp === otp) {
+            if (findUser.isEmailVerified) {
+                return next(new AppError_1.default("This user has already verified their account.", 400));
+            }
+            // Check if current time is past the expiration time
+            if (now > dateToCheck) {
+                return next(new AppError_1.default("This OTP has expired. Please request a new one.", 400));
+            }
+            else {
+                findUser.isEmailVerified = true;
+                findUser.otp = "";
+                findUser.otpExpires = null;
+                yield findUser.save();
+                // Send welcome email
+                yield (0, nodemailer_config_1.default)({
+                    email: findUser.email,
+                    subject: "Welcome to BookAPP!",
+                    templateName: "welcome",
+                    context: { name: findUser.name || "User" }, // Use name if available
+                }).catch((error) => console.error("Failed to send welcome email:", error));
+                findUser.password = undefined;
+                const account = {
+                    id: findUser._id,
+                    firstName: findUser.firstName + " " + findUser.lastName,
+                    email: findUser.email,
+                    role: findUser.role,
+                };
+                const accessToken = (0, GenerateToken_1.GenerateAccessToken)(account);
+                const refreshToken = (0, GenerateToken_1.GenerateRefreshToken)(account);
+                return (0, AppResponse_1.default)(res, "User verification successful.", 200, {
+                    accessToken: accessToken,
+                    refreshToken: refreshToken,
+                    account: findUser,
+                });
+            }
+        }
+        // Add this line to handle invalid OTP
+        return next(new AppError_1.default("Invalid OTP code", 400));
+    }
+    catch (error) {
+        console.error("Error during email verification:", error);
+        return next(new AppError_1.default("Email verification failed", 500));
     }
 }));
 // // Resend Verification Email
@@ -104,146 +185,74 @@ exports.registerHandler = (0, catchAsync_1.default)((req, res, next) => __awaite
 //     }
 // );
 // // Login Handler
-// export const loginHandler = catchAsync(
-//     async (req: Request, res: Response, next: NextFunction) => {
-//         const isMobile = req.headers.mobilereqsender;
-//         const { phone_email_or_username, password } = req.body;
-//         console.log("Login Request:", { phone_email_or_username, password });
-//         const user: any = await User.findOne({
-//             $or: [{ email: phone_email_or_username }, { phone_number: phone_email_or_username }, { username: phone_email_or_username }],
-//         })
-//             .select("+password")
-//             .populate("store");
-//         console.log("User Found:", user ? user.email : "No user");
-//         if (!user) return next(new AppError("User not found", 404));
-//         const isMatch = await bcrypt.compare(password, user.password);
-//         console.log("Password Match:", isMatch);
-//         if (!isMatch) return next(new AppError("Invalid credentials", 401));
-//         if (!user.isEmailVerified)
-//             return next(new AppError("Please verify your email before log in.", 401));
-//         const account = {
-//             id: user._id,
-//             name: user.name,
-//             username: user.username,
-//             email: user.email,
-//             role: user.role,
-//         };
-//         console.log("Account:", account);
-//         const accessToken = GenerateAccessToken(account);
-//         const refreshToken = GenerateRefreshToken(account);
-//         console.log("Tokens:", { accessToken, refreshToken });
-//         user.password = undefined;
-//         await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
-//         if (isMobile)
-//             return AppResponse(res, "Login successful", 200, {
-//                 accessToken,
-//                 refreshToken,
-//                 account: user,
-//             });
-//         res.cookie("e_access_token", accessToken, {
-//             httpOnly: true,
-//             secure: process.env.NODE_ENV === "production",
-//             sameSite: "none",
-//             partitioned: true,
-//             priority: "high",
-//             signed: true,
-//             maxAge: 60 * 24 * 60 * 60 * 1000,
-//             expires: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
-//         });
-//         res.cookie("e_refresh_token", refreshToken, {
-//             httpOnly: true,
-//             secure: process.env.NODE_ENV === "production",
-//             sameSite: "none",
-//             partitioned: true,
-//             signed: true,
-//             priority: "high",
-//             maxAge: 60 * 24 * 60 * 60 * 1000,
-//             expires: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
-//         });
-//         return AppResponse(res, "Login successful", 200, {
-//             accessToken,
-//             refreshToken,
-//             account: user,
-//         });
-//     }
-// );
-// // export const loginHandler = catchAsync(
-// //     async (req: Request, res: Response, next: NextFunction) => {
-// //         const isMobile = req.headers.mobilereqsender;
-// //         const { phone_email_or_username, password } = req.body;
-// //         // const user = await User.findOne({ email });
-// //         const user: any = await User.findOne({
-// //             $or: [{ email: phone_email_or_username }, { phone_number: phone_email_or_username }, { username: phone_email_or_username }], 
-// //         })
-// //             .select("+password")
-// //             .populate("store");
-// //         if (!user) return next(new AppError("User not found", 404));
-// //         const isMatch = await bcrypt.compare(password, user.password);
-// //         if (!isMatch) return next(new AppError("Invalid credentials", 401));
-// //         if (!user.isEmailVerified)
-// //             return next(new AppError("Please verify your email before log in.", 401));
-// //         // if (user.is_two_factor_enabled) {
-// //         //     //We should send a token here to track that okay, this person has had their password stuff done
-// //         //     const two_fa_track = {
-// //         //         id: user._id,
-// //         //         createdAt: Date.now(),
-// //         //     };
-// //         //     const two_fa_token = GenerateTrackingToken(two_fa_track);
-// //         //     return AppResponse(
-// //         //         res,
-// //         //         "Please check your Authenticator app for your token.",
-// //         //         200,
-// //         //         two_fa_token
-// //         //     );
-// //         // }
-// //         const account = {
-// //             id: user._id,
-// //             name: user.name,
-// //             username: user.username,
-// //             email: user.email,
-// //             // phone_number: user.phone_number,
-// //             role: user.role,
-// //             // profile_image:user.imageUrl,
-// //         };
-// //         // remove password from the user object
-// //         user.password = undefined;
-// //         await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
-// //         const accessToken: string | undefined = GenerateAccessToken(account);
-// //         const refreshToken: string | undefined = GenerateRefreshToken(account);
-// //         //If it is mobile we send token in response
-// //         if (isMobile)
-// //             return AppResponse(res, "Login successful", 200, {
-// //                 accessToken: accessToken,
-// //                 refreshToken: refreshToken,
-// //                 account: user,
-// //             });
-// //         res.cookie("e_access_token", accessToken, {
-// //             httpOnly: true,
-// //             secure: process.env.NODE_ENV === "production",
-// //             sameSite: "none",
-// //             partitioned: true,
-// //             priority: "high",
-// //             signed: true,
-// //             maxAge: 60 * 24 * 60 * 60 * 1000,
-// //             expires: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
-// //         });
-// //         res.cookie("e_refresh_token", refreshToken, {
-// //             httpOnly: true,
-// //             secure: process.env.NODE_ENV === "production",
-// //             sameSite: "none",
-// //             partitioned: true,
-// //             signed: true,
-// //             priority: "high",
-// //             maxAge: 60 * 24 * 60 * 60 * 1000,
-// //             expires: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
-// //         });
-// //         return AppResponse(res, "Login successful", 200, {
-// //             accessToken: accessToken,
-// //             refreshToken: refreshToken,
-// //             account: user,
-// //         });
-// //     }
-// // );
+exports.loginHandler = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const isMobile = req.headers.mobilereqsender;
+        const { email, password } = req.body;
+        const user = yield user_model_1.User.findOne({ email })
+            .select("+password");
+        if (!user)
+            return next(new AppError_1.default("User not found", 404));
+        const isMatch = yield bcryptjs_1.default.compare(password, user.password);
+        if (!isMatch)
+            return next(new AppError_1.default("Invalid credentials", 401));
+        if (!user.isEmailVerified)
+            return next(new AppError_1.default("Please verify your email before log in.", 401));
+        const account = {
+            id: user._id,
+            name: user.firstName + " " + user.lastName,
+            email: user.email,
+            role: user.role,
+        };
+        const accessToken = (0, GenerateToken_1.GenerateAccessToken)(account);
+        const refreshToken = (0, GenerateToken_1.GenerateRefreshToken)(account);
+        console.log("Tokens:", { accessToken, refreshToken });
+        user.password = "";
+        yield user_model_1.User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
+        if (isMobile)
+            return (0, AppResponse_1.default)(res, "Login successful", 200, {
+                accessToken,
+                refreshToken,
+                account: user,
+            });
+        res.cookie("e_access_token", accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "none",
+            partitioned: true,
+            priority: "high",
+            signed: true,
+            maxAge: 60 * 24 * 60 * 60 * 1000,
+            expires: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+        });
+        res.cookie("e_refresh_token", refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "none",
+            partitioned: true,
+            signed: true,
+            priority: "high",
+            maxAge: 60 * 24 * 60 * 60 * 1000,
+            expires: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+        });
+        return (0, AppResponse_1.default)(res, "Login successful", 200, {
+            accessToken,
+            refreshToken,
+            account: user,
+        });
+    }
+    catch (error) {
+        console.error("Error during login:", error);
+        return next(new AppError_1.default("Login failed", 500));
+    }
+}));
+// chanegePasswordHandler
+// This function will handle changing the user's password, validating the old password, and updating to a new password.
+exports.changePasswordHandler = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () { }));
+//For Kazeem
+// resetpasswordHandler
+// This function will handle resetting the user's password using a reset token, validating the token, and updating the password.
+exports.resetPasswordHandler = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () { }));
 // export const forgotPasswordHandler = catchAsync(
 //     async (req: Request, res: Response, next: NextFunction) => {
 //         const { email } = req.body;

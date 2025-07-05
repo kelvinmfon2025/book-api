@@ -10,4 +10,7 @@ const authValidation_1 = require("../validations/authValidation");
 const auth_controller_1 = require("../controllers/auth.controller");
 const router = express_1.default.Router();
 router.post("/register", rateLimit_1.default, (0, validateZod_1.default)(authValidation_1.registerSchema), auth_controller_1.registerHandler);
+router.post('/verify-email', (0, validateZod_1.default)(authValidation_1.verifyEmailOtpSchema), auth_controller_1.verifyEmailHandler);
+router.patch("/login", rateLimit_1.default, (0, validateZod_1.default)(authValidation_1.loginSchema), auth_controller_1.loginHandler);
+// router.logout()
 exports.default = router;

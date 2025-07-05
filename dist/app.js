@@ -50,6 +50,8 @@ const db_config_1 = __importDefault(require("./src/config/db.config"));
 const AppError_1 = __importDefault(require("./src/errors/AppError"));
 const errorHandler_1 = __importDefault(require("./src/errors/errorHandler"));
 const auth_route_1 = __importDefault(require("./src/routes/auth.route"));
+const user_route_1 = __importDefault(require("./src/routes/user.route"));
+const book_routes_1 = __importDefault(require("./src/routes/book.routes"));
 const logger_1 = __importStar(require("./src/middleware/logger"));
 const serviceUrl_1 = require("./serviceUrl");
 dotenv_1.default.config();
@@ -88,7 +90,9 @@ const shouldCompress = (req, res) => {
 };
 app.use((0, compression_1.default)({ filter: shouldCompress }));
 //All Routes comes in Here
-app.use("/auth", auth_route_1.default);
+app.use("/v1/api/auth", auth_route_1.default);
+app.use("/v1/api/user", user_route_1.default);
+app.use("/v1/api/book", book_routes_1.default);
 app.get("/", (req, res, next) => {
     res.send("Hi");
 });
