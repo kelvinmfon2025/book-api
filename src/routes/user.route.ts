@@ -15,8 +15,6 @@ router.get("/profile", VerifyAccessToken, getUserProfile) ;
  
 router.put("/update-profile", VerifyAccessToken, updateUserProfile)
 
-router.get("/get-user-id/:id", VerifyAccessToken,  CheckRole(["admin", "librarian"],), getUserById)
-
 router.put("/update-user-id/:id", VerifyAccessToken, updateUserById);
 
 router.delete("/delete-user-id/:id", VerifyAccessToken, deleteUserById);
