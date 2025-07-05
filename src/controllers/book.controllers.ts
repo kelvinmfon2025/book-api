@@ -165,7 +165,44 @@ export const deleteBook = catchAsync(
 // GET /api/users/:id/borrowed - Get a user’s borrowed books (authenticated user for their own books, admin/librarian for any user).
 
 export const borrowBook = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {}
+  async (req: Request, res: Response, next: NextFunction) => {
+    const user = req.user as IUser;
+    const { bookId } = req.body;
+    if (!bookId) {
+      return next(new AppError("Book ID is required", 400));
+    }
+    const book = await BookModel.findById(bookId);
+    if (!book) {
+      return next(new AppError("Book not found", 404));
+    }
+    if (book.availableCopies <= 0) {
+      return next(new AppError("No available copies of this book", 400));
+    }
+    if (user.borrowedBooks.length >= 5) {
+      return next(new AppError("You can only borrow up to 5 books", 400));
+    }
+    const borrowDate = new Date();
+    const dueDate = new Date(borrowDate);
+    dueDate.setDate(dueDate.getDate() + 14); // Set due date  
+    user.borrowedBooks.push({
+      bookId: book._id as import("mongoose").Types.ObjectId,
+      borrowDate,
+      dueDate,
+    });
+    book.availableCopies -= 1;
+    await user.save();
+    await book.save();
+    return AppResponse(
+      res,
+      "Book borrowed successfully",
+      200,
+      {
+        bookId: book._id,
+        borrowDate,
+        dueDate,
+      }
+    );  
+  }
 );
 
 export const returnBook = catchAsync(

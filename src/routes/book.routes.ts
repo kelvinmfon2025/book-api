@@ -13,7 +13,7 @@ const router = express.Router();
 router.post(
   "/create-book",
   VerifyAccessToken,
-  CheckRole(["admin", "librarian"], "somePermission"),
+  CheckRole(["admin", "librarian"]),
   createBook
 );
 
@@ -52,8 +52,9 @@ router.delete(
 
 
 // Borrowed books
+router.post('/borrow-book', VerifyAccessToken, borrowBook);
 
-router.post('/borrow', VerifyAccessToken, borrowBook)
+// router.post('/borrow', VerifyAccessToken, CheckRole(['member']), borrowBook)
 
 
 router.get("/search-by-query" , VerifyAccessToken, searchBookByQuery);
