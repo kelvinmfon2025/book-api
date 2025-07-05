@@ -13,7 +13,7 @@ const router = express.Router();
 router.post(
   "/create-book",
   VerifyAccessToken,
-  CheckRole(["admin", "librarian"], "somePermission"),
+  CheckRole(["admin", "librarian"]),
   createBook
 );
 
