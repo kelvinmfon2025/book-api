@@ -17,4 +17,32 @@ router.post(
   createBook
 );
 
+// Route to get all books with pagination
+router.get(
+  "/",
+  Limiter,
+  getAllBooks
+);
+// Route to get a specific book by ID
+router.get(
+  "/:id",
+  Limiter,
+  VerifyAccessToken,
+  getSpecificBook
+);
+// Route to update a book by ID
+router.patch(
+  "/:id",
+  VerifyAccessToken,
+  CheckRole(["admin", "librarian"]),
+  updateBook
+);
+// Route to delete a book by ID
+router.delete(
+  "/:id",
+  VerifyAccessToken,
+  CheckRole(["admin", "librarian"]),
+  deleteBook
+);
+
 export default router;
