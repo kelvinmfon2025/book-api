@@ -21,8 +21,9 @@ router.post(
 
 
 // Borrowed books
+router.post('/borrow-book', VerifyAccessToken, borrowBook);
 
-router.post('/borrow', VerifyAccessToken, borrowBook)
+// router.post('/borrow', VerifyAccessToken, CheckRole(['member']), borrowBook)
 
 
 
