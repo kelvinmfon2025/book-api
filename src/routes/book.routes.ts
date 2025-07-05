@@ -17,7 +17,38 @@ router.post(
   createBook
 );
 
-// Route to get all books
+// Route to get all books\
+
+router.get(
+  "/all-books",
+  VerifyAccessToken,
+  Limiter,
+  getAllBooks
+);
+
+// Route to get a specific book by ID
+router.get(
+  "/book/:id",
+  VerifyAccessToken,
+  getSpecificBook
+);
+
+// update book
+router.put(
+  "/update-book/:id", 
+  VerifyAccessToken,
+  CheckRole(["admin", "librarian"]),
+  updateBook
+);
+
+
+// delete book
+router.delete(
+  "/delete-book/:id", 
+  VerifyAccessToken,
+  CheckRole(["admin", "librarian"]),
+  deleteBook
+);
 
 
 // Borrowed books
