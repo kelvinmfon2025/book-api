@@ -54,10 +54,15 @@ const bookSchema: Schema<IBook> = new Schema<IBook>(
         },
         message: 'Available copies cannot exceed total copies',
       },
+      default: 0
     },
     location: {
       type: String,
       trim: true,
+    },
+    reservationsCount: { 
+      type: Number, 
+      default: 0 
     },
     description: {
       type: String,
@@ -75,3 +80,5 @@ const bookSchema: Schema<IBook> = new Schema<IBook>(
 );
 
 export const BookModel = mongoose.model<IBook>('Book', bookSchema);
+
+export { IBook };

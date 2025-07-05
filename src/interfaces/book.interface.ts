@@ -10,9 +10,12 @@ export interface IBook extends Document {
   language?: string;
   totalCopies: number;
   availableCopies: number;
+  reservationsCount: Number;
   location?: string; // e.g., shelf or section
   description?: string;
   coverImage?: string; // URL or file path
   createdAt: Date;
   updatedAt: Date;
 }
+
+      

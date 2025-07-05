@@ -175,3 +175,64 @@ export const returnBook = catchAsync(
 export const getUserBorrowedBooks = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {}
 );
+
+
+
+
+
+
+
+//KELVIN 
+//THIS IS WHERE I STARTED WRITING FROM
+//I have done this it just remain to test it in postman
+
+export const searchBookByQuery = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { query, page = "1", limit = "10" } = req.query;
+
+    // Ensure query is a valid string
+    if (typeof query !== "string" || query.trim() === "") {
+      return next(new AppError("Search query is required", 400));
+    }
+
+    const searchRegex = new RegExp(query.trim(), "i");
+
+    // Pagination values
+    const pageNumber = Math.max(parseInt(page as string, 10), 1);
+    const limitNumber = Math.max(parseInt(limit as string, 10), 1);
+    const skip = (pageNumber - 1) * limitNumber;
+
+    // Define search condition
+    const searchCondition = {
+      $or: [
+        { title: searchRegex },
+        { authors: searchRegex },
+        { genres: searchRegex },
+        { isbn: searchRegex },
+      ],
+    };
+
+    // Perform search with pagination
+    const [books, total] = await Promise.all([
+      BookModel.find(searchCondition).skip(skip).limit(limitNumber),
+      BookModel.countDocuments(searchCondition),
+    ]);
+
+    if (books.length === 0) {
+      return next(new AppError("No books found matching your query", 404));
+    }
+
+    return AppResponse(res, "Books retrieved successfully", 200, {
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+      results: books,
+    });
+  }
+);
+
+
+
+
+
+

@@ -3,7 +3,7 @@ import VerifyAccessToken, {
   VerifyTrackingToken,
 } from "../middleware/verifyAccessToken";
 import Limiter from "../middleware/rateLimit";
-import { createBook, borrowBook, returnBook, getUserBorrowedBooks, getAllBooks, getSpecificBook, updateBook, deleteBook } from "../controllers/book.controllers";
+import { createBook, borrowBook, returnBook, searchBookByQuery, getUserBorrowedBooks, getAllBooks, getSpecificBook, updateBook, deleteBook } from "../controllers/book.controllers";
 import CheckRole from "../middleware/checkRole";
 
 const router = express.Router();
@@ -17,32 +17,44 @@ router.post(
   createBook
 );
 
-// Route to get all books with pagination
+// Route to get all books\
+
 router.get(
-  "/",
+  "/all-books",
+  VerifyAccessToken,
   Limiter,
   getAllBooks
 );
+
 // Route to get a specific book by ID
 router.get(
-  "/:id",
-  Limiter,
+  "/book/:id",
   VerifyAccessToken,
   getSpecificBook
 );
-// Route to update a book by ID
-router.patch(
-  "/:id",
+
+// update book
+router.put(
+  "/update-book/:id", 
   VerifyAccessToken,
   CheckRole(["admin", "librarian"]),
   updateBook
 );
-// Route to delete a book by ID
+
+
+// delete book
 router.delete(
-  "/:id",
+  "/delete-book/:id", 
   VerifyAccessToken,
   CheckRole(["admin", "librarian"]),
   deleteBook
 );
+
+
+// Borrowed books
+
+router.post('/borrow', VerifyAccessToken, borrowBook)
+
+
 
 export default router;
