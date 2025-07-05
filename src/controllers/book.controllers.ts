@@ -64,76 +64,19 @@ export const createBook = catchAsync(
 );
 
 export const getAllBooks = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const books = await BookModel.find();
-      return AppResponse(res, "Books fetched successfully", 200, books);
-    } catch (error) {
-      console.error("Error fetching books:", error);
-      return next(new AppError("Failed to fetch books", 500));
-    }
-  }
+  async (req: Request, res: Response, next: NextFunction) => {}
 );
 
 export const getSpecificBook = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { id } = req.params;
-      const book = await BookModel.findById(id);
-
-      if (!book) {
-        return next(new AppError("Book not found", 404));
-      }
-
-      return AppResponse(res, "Book fetched successfully", 200, book);
-    } catch (error) {
-      console.error("Error fetching book:", error);
-      return next(new AppError("Failed to fetch book", 500));
-    }
-  }
+  async (req: Request, res: Response, next: NextFunction) => {}
 );
 
 export const updateBook = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { id } = req.params as { id: string };
-      const updateData = req.body;
-
-
-      console.log("Update book ID:", id);
-      console.log("Update book data:", updateData);
-
-      const book = await BookModel.findByIdAndUpdate(
-        id, updateData, { new: true, runValidators: true,});
-
-      if (!book) {
-        return next(new AppError("Book not found", 404));
-      }
-
-      return AppResponse(res, "Book updated successfully", 200, book);
-    } catch (error) {
-      console.error("Error updating book:", error);
-      return next(new AppError("Failed to update book", 500));
-    }
-  }
+  async (req: Request, res: Response, next: NextFunction) => {}
 );
 
 export const deleteBook = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { id } = req.params as { id: string };
-      const deletedBook = await BookModel.findByIdAndDelete(id);
-
-      if (!deletedBook) {
-        return next(new AppError("Book not found", 404));
-      }
-
-      return AppResponse(res, "Book deleted successfully", 200, deletedBook);
-    } catch (error) {
-      console.error("Error deleting book:", error);
-      return next(new AppError("Failed to delete book", 500));
-    }
-  }
+  async (req: Request, res: Response, next: NextFunction) => {}
 );
 
 //KAZEEM

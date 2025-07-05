@@ -29,3 +29,6 @@
 2025-07-05T10:22:47.367Z [[32minfo[39m]: PATCH - /v1/api/book/books/68616edad99db70fcb44acd6
 2025-07-05T10:44:25.374Z [[32minfo[39m]: PATCH - /v1/api/book/books/68616edad99db70fcb44acd6
 2025-07-05T11:32:12.212Z [[32minfo[39m]: DELETE - /v1/api/book/books/68616edad99db70fcb44acd6
+2025-07-05T12:10:36.587Z [[32minfo[39m]: Successfully connected to DB
+2025-07-05T12:10:36.595Z [[32minfo[39m]: Server running on port 3002
+2025-07-05T12:10:37.072Z [[32minfo[39m]: Successfully connected to DB
