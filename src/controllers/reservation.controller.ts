@@ -5,7 +5,6 @@ import AppError from "../errors/AppError";
 import { Reservation } from "../interfaces/reservation.interface";
 import ReservationModel from "../model/reservation.model";
 import { BookModel } from "../model/book.model";
-import { logger } from "handlebars";
 
 
 
