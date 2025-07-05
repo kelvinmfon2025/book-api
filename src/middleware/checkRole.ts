@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import AppError from '../errors/AppError';
 import { IUser } from '../interfaces/user.interface'
 
-function CheckRole(allowedRoles: string | string[]) {
+function CheckRole(allowedRoles: string | string[], p0: string) {
     const rolesArray = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
 
     return (req: Request, res: Response, next: NextFunction) => {

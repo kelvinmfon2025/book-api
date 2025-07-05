@@ -35,6 +35,11 @@ const userSchema: Schema<IUser> = new Schema<IUser>(
       type: String,
       trim: true,
     },
+    bio: {
+      type: String,
+      trim: true,
+      maxlength: [300, "Bio must be 300 characters or less"], // Optional validation
+    },
     role: {
       type: String,
       enum: ["member", "admin", "librarian"],
