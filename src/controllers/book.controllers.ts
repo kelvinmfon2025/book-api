@@ -164,6 +164,8 @@ export const deleteBook = catchAsync(
 
 // GET /api/users/:id/borrowed - Get a user’s borrowed books (authenticated user for their own books, admin/librarian for any user).
 
+
+
 export const borrowBook = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const user = req.user as IUser;
@@ -205,17 +207,183 @@ export const borrowBook = catchAsync(
   }
 );
 
+
+
+// export const returnBook = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//       const user = req.user as IUser;
+//       const { borrowId } = req.params;
+
+//       // Find the user with the specific borrow record
+//       const userDoc = await User.findOne({
+//         _id: user._id,
+//         "borrowedBooks._id": borrowId,
+//       });
+
+//       if (!userDoc) {
+//         return next(new AppError("Borrow record not found", 404));
+//       }
+
+//       // Find the borrow record
+//       const borrowRecord = userDoc.borrowedBooks.find(
+//         (record) => record.bookId.toString() === borrowId
+//       );
+
+//       if (!borrowRecord) {
+//         return next(new AppError("Borrow record not found", 404));
+//       }
+
+//       // Find the book
+//       const book = await BookModel.findById(borrowRecord.bookId);
+//       if (!book) {
+//         return next(new AppError("Book not found", 404));
+//       }
+
+//       // Remove the borrow record from the user's borrowedBooks
+//       userDoc.borrowedBooks = userDoc.borrowedBooks.filter(
+//         (record) => record.bookId.toString() !== borrowId
+//       );
+
+//       // Increment available copies
+//       book.availableCopies += 1;
+
+//       // Save both user and book
+//       await userDoc.save();
+//       await book.save();
+
+//       return AppResponse(res, "Book returned successfully", 200, {
+//         bookId: book._id,
+//         returnDate: new Date(),
+//       });
+//     } catch (error) {
+//       console.error("Error returning book:", error);
+//       return next(new AppError("Failed to return book", 500));
+//     }
+//   }
+// );
+
+
+
 export const returnBook = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    
+    try {
+      const user = req.user as IUser;
+      const { borrowId } = req.params; // This is actually the bookId
+
+      // Find the user with the specific borrowed book
+      const userDoc = await User.findOne({
+        _id: user._id,
+        "borrowedBooks.bookId": borrowId, // Search by bookId
+      });
+
+      if (!userDoc) {
+        return next(new AppError("Borrow record not found", 404));
+      }
+
+      // Find the borrow record using the bookId
+      const borrowRecord = userDoc.borrowedBooks.find(
+        (record) => record.bookId.toString() === borrowId // Compare with bookId
+      );
+
+      if (!borrowRecord) {
+        return next(new AppError("Borrow record not found", 404));
+      }
+
+      // Find the book
+      const book = await BookModel.findById(borrowId); // Use borrowId as bookId
+      if (!book) {
+        return next(new AppError("Book not found", 404));
+      }
+
+      // Remove the borrow record from the user's borrowedBooks
+      userDoc.borrowedBooks = userDoc.borrowedBooks.filter(
+        (record) => record.bookId.toString() !== borrowId // Filter by bookId
+      );
+
+      // Increment available copies
+      book.availableCopies += 1;
+
+      // Save both user and book
+      await userDoc.save();
+      await book.save();
+
+      return AppResponse(res, "Book returned successfully", 200, {
+        bookId: book._id,
+        returnDate: new Date(),
+      });
+    } catch (error) {
+      console.error("Error returning book:", error);
+      return next(new AppError("Failed to return book", 500));
+    }
   }
 );
 
+// TO DO
+
+//export const getUserBorrowedBooks = catchAsync(
+//  async (req: Request, res: Response, next: NextFunction) => {}
+
+
 export const getUserBorrowedBooks = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {}
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const requestingUser = req.user as IUser;
+      const { id } = req.params;
+
+      // Check if user is trying to access their own borrowed books or if they're admin/librarian
+      if (
+        (requestingUser._id as unknown as { toString: () => string }).toString() !== id &&
+        !["admin", "librarian"].includes(requestingUser.role)
+      ) {
+        return next(
+          new AppError("You can only view your own borrowed books", 403)
+        );
+      }
+
+      // Find the user whose borrowed books we want to retrieve
+      const user = await User.findById(id).populate({
+        path: "borrowedBooks.bookId",
+        select: "title authors isbn publisher genres coverImage",
+      });
+
+      if (!user) {
+        return next(new AppError("User not found", 404));
+      }
+
+      // Format the borrowed books data
+      const borrowedBooksData = user.borrowedBooks.map((borrowedBook) => ({
+        borrowId: borrowedBook.bookId, // Use bookId as the unique identifier
+        book: borrowedBook.bookId,
+        borrowDate: borrowedBook.borrowDate,
+        dueDate: borrowedBook.dueDate,
+        isOverdue: new Date() > borrowedBook.dueDate,
+        daysOverdue: Math.max(
+          0,
+          Math.floor(
+            (new Date().getTime() - borrowedBook.dueDate.getTime()) /
+              (1000 * 60 * 60 * 24)
+          )
+        ),
+      }));
+
+      return AppResponse(
+        res,
+        "Borrowed books retrieved successfully",
+        200,
+        {
+          userId: user._id,
+          userName: user.name || user.email,
+          totalBorrowedBooks: borrowedBooksData.length,
+          borrowedBooks: borrowedBooksData,
+        }
+      );
+    } catch (error) {
+      console.error("Error retrieving borrowed books:", error);
+      return next(new AppError("Failed to retrieve borrowed books", 500));
+    }
+  }
 );
-
-
 
 
 

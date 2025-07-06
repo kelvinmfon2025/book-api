@@ -4,6 +4,7 @@ import VerifyAccessToken, { VerifyTrackingToken } from "../middleware/verifyAcce
 import Limiter from "../middleware/rateLimit";
 import { loginSchema, registerSchema, verifyEmailOtpSchema } from "../validations/authValidation";
 import { registerHandler, loginHandler, verifyEmailHandler  } from "../controllers/auth.controller";
+import { getUserBorrowedBooks } from "../controllers/book.controller";
 
 const router = express.Router();
 
@@ -17,6 +18,14 @@ router.patch("/login", Limiter, validate(loginSchema), loginHandler);
 
 
 
+// In book.routes.ts
+// Add this route with the existing routes
+
+router.get(
+  "/users/:id/borrowed",
+  VerifyAccessToken,
+  getUserBorrowedBooks
+);
 
 
 

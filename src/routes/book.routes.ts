@@ -60,6 +60,23 @@ router.post('/borrow-book', VerifyAccessToken, borrowBook);
 router.get("/search-by-query" , VerifyAccessToken, searchBookByQuery);
 
 
+// Return book
+router.post(
+  "/return/:borrowId",
+  VerifyAccessToken,
+  CheckRole(["member"]),
+  returnBook
+);
+
+
+// Add this route to your existing routes in book.routes.ts
+
+// Route to get user's borrowed books
+router.get(
+  "/users/:id/borrowed",
+  VerifyAccessToken,
+  getUserBorrowedBooks
+);
 
 
 export default router;

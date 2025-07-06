@@ -169,3 +169,29 @@
 2025-07-05T16:04:51.148Z [[32minfo[39m]: Server running on port 3002
 2025-07-05T16:13:23.877Z [[32minfo[39m]: Successfully connected to DB
 2025-07-05T16:13:23.896Z [[32minfo[39m]: Server running on port 3002
+2025-07-05T16:37:56.994Z [[32minfo[39m]: Successfully connected to DB
+2025-07-05T16:37:57.009Z [[32minfo[39m]: Server running on port 3002
+2025-07-05T16:38:01.582Z [[32minfo[39m]: POST - /v1/api/auth/login
+2025-07-05T16:38:01.586Z [[33mwarn[39m]: Can not find /v1/api/auth/login with POST on this server
+2025-07-05T16:38:38.470Z [[32minfo[39m]: PATCH - /v1/api/auth/login
+2025-07-05T16:40:04.020Z [[32minfo[39m]: POST - /v1/api/book/return/68693820e0f0a6ae97f3a982
+2025-07-05T16:40:17.166Z [[32minfo[39m]: POST - /v1/api/book/borrow-book
+2025-07-05T16:41:20.618Z [[32minfo[39m]: POST - /v1/api/book/return/68693820e0f0a6ae97f3a982
+2025-07-05T16:41:29.704Z [[32minfo[39m]: POST - /v1/api/book/return/68693820e0f0a6ae97f3a982
+2025-07-05T16:43:21.454Z [[32minfo[39m]: Successfully connected to DB
+2025-07-05T16:43:21.467Z [[32minfo[39m]: Server running on port 3002
+2025-07-05T16:43:30.911Z [[32minfo[39m]: POST - /v1/api/book/return/68693820e0f0a6ae97f3a982
+2025-07-05T16:44:16.178Z [[32minfo[39m]: POST - /v1/api/book/return/6869557181108b75421263a7
+2025-07-05T16:48:33.441Z [[32minfo[39m]: Successfully connected to DB
+2025-07-05T16:48:33.453Z [[32minfo[39m]: Server running on port 3002
+2025-07-05T16:49:17.644Z [[32minfo[39m]: Successfully connected to DB
+2025-07-05T16:49:17.671Z [[32minfo[39m]: Server running on port 3002
+2025-07-05T16:49:24.311Z [[32minfo[39m]: POST - /v1/api/book/return/6869557181108b75421263a7
+2025-07-05T16:50:30.181Z [[32minfo[39m]: Successfully connected to DB
+2025-07-05T16:50:30.194Z [[32minfo[39m]: Server running on port 3002
+2025-07-05T16:51:21.891Z [[32minfo[39m]: POST - /v1/api/book/return/68693820e0f0a6ae97f3a982
+2025-07-05T17:03:08.722Z [[32minfo[39m]: Successfully connected to DB
+2025-07-05T17:03:08.746Z [[32minfo[39m]: Server running on port 3002
+2025-07-05T17:03:18.700Z [[32minfo[39m]: POST - /v1/api/book/return/68693820e0f0a6ae97f3a982
+2025-07-05T20:25:56.550Z [[31merror[39m]: Error connecting to DB
+2025-07-05T20:25:56.608Z [[32minfo[39m]: Server running on port 3002
