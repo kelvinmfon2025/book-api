@@ -4,10 +4,13 @@ import VerifyAccessToken from "../middleware/verifyAccessToken";
 import Limiter from "../middleware/rateLimit";
 import { verify } from "crypto";
 import CheckRole from "../middleware/checkRole";
-import { reserveBook } from "../controllers/reservation.controller";
+import { getAllReservations, reserveBook } from "../controllers/reservation.controller";
 
 const router = express.Router();
 
-router.post("/reserve/:id", VerifyAccessToken, reserveBook);
+router.post("/reserve/:bookId", VerifyAccessToken, reserveBook);
+
+
+router.get("/reservations", VerifyAccessToken, CheckRole(["admin", "librarian"]), Limiter, getAllReservations);
 
 export default router;
