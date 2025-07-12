@@ -5,7 +5,7 @@ import Limiter from "../middleware/rateLimit";
 import { getUserProfile, updateUserById } from "../controllers/user.controller";
 import { updateUserProfile } from "../controllers/user.controller";
 import { getUserById } from "../controllers/user.controller";
-import { deleteUserById } from "../congittrollers/user.controller";
+import { deleteUserById } from "../controllers/user.controller";
 import { verify } from "crypto";
 import CheckRole from "../middleware/checkRole";
 
