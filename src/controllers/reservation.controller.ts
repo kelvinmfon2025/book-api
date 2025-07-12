@@ -6,9 +6,6 @@ import { Reservation } from "../interfaces/reservation.interface";
 import ReservationModel from "../model/reservation.model";
 import { BookModel } from "../model/book.model";
 
-
-
-
 export const reserveBook = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { bookId } = req.params;
@@ -69,5 +66,4 @@ export const reserveBook = catchAsync(
     });
   }
 );
-
 

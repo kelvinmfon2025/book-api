@@ -8,6 +8,6 @@ import { reserveBook } from "../controllers/reservation.controller";
 
 const router = express.Router();
 
-router.post("/reserve/:id", VerifyAccessToken, reserveBook);
+router.post("/reserve/:bookid", VerifyAccessToken, reserveBook);
 
 export default router;
