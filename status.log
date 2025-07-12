@@ -167,3 +167,57 @@
 2025-07-05T16:01:48.945Z [[32minfo[39m]: Server running on port 3002
 2025-07-05T16:04:51.126Z [[32minfo[39m]: Successfully connected to DB
 2025-07-05T16:04:51.148Z [[32minfo[39m]: Server running on port 3002
+2025-07-05T16:05:08.176Z [[32minfo[39m]: Successfully connected to DB
+2025-07-12T12:31:47.363Z [[32minfo[39m]: Successfully connected to DB
+2025-07-12T12:31:47.377Z [[32minfo[39m]: Server running on port 3002
+2025-07-12T12:42:34.495Z [[32minfo[39m]: POST - /v1/api/reservation/reserve/68693884e0f0a6ae97f3a991
+2025-07-12T12:43:19.116Z [[32minfo[39m]: POST - /v1/api/reservation/reserve/68693c5b65ce0a604b07e583
+2025-07-12T12:43:33.902Z [[32minfo[39m]: POST - /v1/api/reservation/reserve?68693c5b65ce0a604b07e583
+2025-07-12T12:43:33.904Z [[33mwarn[39m]: Can not find /v1/api/reservation/reserve?68693c5b65ce0a604b07e583 with POST on this server
+2025-07-12T12:43:43.439Z [[32minfo[39m]: POST - /v1/api/reservation/reserve/:68693c5b65ce0a604b07e583
+2025-07-12T12:50:08.037Z [[32minfo[39m]: Successfully connected to DB
+2025-07-12T12:50:08.055Z [[32minfo[39m]: Server running on port 3002
+2025-07-12T12:50:16.102Z [[32minfo[39m]: POST - /v1/api/reservation/reserve/68693c5b65ce0a604b07e583
+2025-07-12T12:57:24.854Z [[32minfo[39m]: Successfully connected to DB
+2025-07-12T12:57:24.876Z [[32minfo[39m]: Server running on port 3002
+2025-07-12T12:57:46.258Z [[32minfo[39m]: POST - /v1/api/reservation/reserve/68693c5b65ce0a604b07e583
+2025-07-12T13:00:48.613Z [[32minfo[39m]: POST - /v1/api/reservation/reserve/6869
+2025-07-12T13:04:08.029Z [[32minfo[39m]: Successfully connected to DB
+2025-07-12T13:04:08.040Z [[32minfo[39m]: Server running on port 3002
+2025-07-12T13:04:58.921Z [[32minfo[39m]: Successfully connected to DB
+2025-07-12T13:04:58.941Z [[32minfo[39m]: Server running on port 3002
+2025-07-12T13:05:07.312Z [[32minfo[39m]: POST - /v1/api/reservation/reserve/6869
+2025-07-12T13:06:51.347Z [[32minfo[39m]: POST - /v1/api/reservation/reserve/68693c5b65ce0a604b07e583
+2025-07-12T13:11:06.614Z [[32minfo[39m]: Successfully connected to DB
+2025-07-12T13:11:06.635Z [[32minfo[39m]: Server running on port 3002
+2025-07-12T13:11:13.940Z [[32minfo[39m]: POST - /v1/api/reservation/reserve/68693c5b65ce0a604b07e583
+2025-07-12T13:13:49.354Z [[32minfo[39m]: POST - /v1/api/reservation/reserve/68693c5b65ce0a604b07e583
+2025-07-12T13:19:30.046Z [[32minfo[39m]: Successfully connected to DB
+2025-07-12T13:19:30.051Z [[32minfo[39m]: Server running on port 3002
+2025-07-12T13:19:37.411Z [[32minfo[39m]: POST - /v1/api/reservation/reserve/68693c5b65ce0a604b07e583
+2025-07-12T13:24:24.520Z [[32minfo[39m]: Successfully connected to DB
+2025-07-12T13:24:24.545Z [[32minfo[39m]: Server running on port 3002
+2025-07-12T13:31:59.889Z [[32minfo[39m]: GET - /v1/api/reservation/reservations
+2025-07-12T13:31:59.891Z [[33mwarn[39m]: Can not find /v1/api/reservation/reservations with GET on this server
+2025-07-12T13:32:56.331Z [[32minfo[39m]: Successfully connected to DB
+2025-07-12T13:32:56.341Z [[32minfo[39m]: Server running on port 3002
+2025-07-12T13:33:12.568Z [[32minfo[39m]: Successfully connected to DB
+2025-07-12T13:33:12.588Z [[32minfo[39m]: Server running on port 3002
+2025-07-12T13:33:20.559Z [[32minfo[39m]: GET - /v1/api/reservation/reservations
+2025-07-12T13:33:47.327Z [[32minfo[39m]: PATCH - /v1/api/auth/login
+2025-07-12T13:34:16.737Z [[32minfo[39m]: GET - /v1/api/reservation/reservations
+2025-07-12T13:34:17.168Z [[33mwarn[39m]: Can not find /v1/api/reservation/reservations with GET on this server
+2025-07-12T13:35:06.880Z [[32minfo[39m]: Successfully connected to DB
+2025-07-12T13:35:06.888Z [[32minfo[39m]: Server running on port 3002
+2025-07-12T13:35:12.624Z [[32minfo[39m]: GET - /v1/api/reservation/reservations
+2025-07-12T13:35:13.708Z [[33mwarn[39m]: Can not find /v1/api/reservation/reservations with GET on this server
+2025-07-12T13:36:49.853Z [[32minfo[39m]: Successfully connected to DB
+2025-07-12T13:36:49.862Z [[32minfo[39m]: Server running on port 3002
+2025-07-12T13:36:55.514Z [[32minfo[39m]: GET - /v1/api/reservation/reservations
+2025-07-12T13:37:48.374Z [[32minfo[39m]: Successfully connected to DB
+2025-07-12T13:37:48.387Z [[32minfo[39m]: Server running on port 3002
+2025-07-12T13:37:54.852Z [[32minfo[39m]: GET - /v1/api/reservation/reservations
+2025-07-12T13:38:39.321Z [[32minfo[39m]: Successfully connected to DB
+2025-07-12T13:38:39.328Z [[32minfo[39m]: Server running on port 3002
+2025-07-12T13:39:45.193Z [[32minfo[39m]: Successfully connected to DB
+2025-07-12T13:39:45.200Z [[32minfo[39m]: Server running on port 3002
